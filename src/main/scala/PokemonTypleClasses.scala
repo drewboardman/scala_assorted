@@ -1,3 +1,5 @@
+import Things.WaterPokemon
+
 object PokemonTypleClasses {
 
   trait Hierarchy {
@@ -24,52 +26,24 @@ object PokemonTypleClasses {
     }
   }
 
-  sealed trait Pokemon
-
-  trait FirePokemon extends Pokemon
-
-  case object Charmander extends FirePokemon {
-    val tier: Hierarchy = Tier1
-  }
-
-  case object Charmeleon extends FirePokemon {
-    val tier: Hierarchy = Tier2
-  }
-
-  case object Charizard extends FirePokemon {
-    val tier: Hierarchy = Tier3
-  }
-
-  trait WaterPokemon extends Pokemon
-
-  case object Squirtle extends WaterPokemon {
-    val tier: Hierarchy = Tier1
-  }
-
-  case object WarTortle extends WaterPokemon {
-    val tier: Hierarchy = Tier2
-  }
-
-  case object Blastoise extends WaterPokemon {
-    val tier: Hierarchy = Tier3
-  }
-
-  trait GrassPokemon extends Pokemon
-
-  case object Bulbasaur extends GrassPokemon {
-    val tier: Hierarchy = Tier1
-  }
-
-  case object Ivysaur extends GrassPokemon {
-    val tier: Hierarchy = Tier2
-  }
-
-  case object Venusaur extends GrassPokemon {
-    val tier: Hierarchy = Tier3
+  implicit class RichTieredPokemon(a: Pokemon) {
+    import TierOrdering._
+    def considerTiers(b: Pokemon): Pokemon = if (a.tier > b.tier) a else b
   }
 
   trait Battle[A <: Pokemon] {
-    def fight[B <: Pokemon](a1: A, a2: B): Pokemon
+    def fight(a1: A, a2: Pokemon): FightResult
   }
 
+  trait FightResult
+  case class Winner(a: Pokemon) extends FightResult
+  case object Draw extends FightResult
+
+  implicit val FireBattle: Battle[FirePokemon] = new Battle[FirePokemon] {
+    def fight(a: FirePokemon, b: Pokemon): FightResult = b match {
+      case waterWins: WaterPokemon => Winner(waterWins.considerTiers(a))
+      case grassLoses: GrassPokemon => Winner(grassLoses.considerTiers(a))
+      case anotherFire: FirePokemon => if (a.tier == anotherFire.tier) Draw else Winner(anotherFire.considerTiers(a))
+    }
+  }
 }

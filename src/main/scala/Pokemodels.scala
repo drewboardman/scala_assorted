@@ -1,3 +1,5 @@
+import PokemonTypleClasses.{Hierarchy, Tier1, Tier2, Tier3}
+
 sealed trait PokeMove {
   def show: String
 }
@@ -25,4 +27,51 @@ trait GrassMove extends PokeMove
 case object VineWhip extends GrassMove {
   override def show = "Vinewhip"
 }
+
+sealed trait Pokemon {
+  val tier: Hierarchy
+}
+
+trait FirePokemon extends Pokemon
+
+case object Charmander extends FirePokemon {
+  val tier: Hierarchy = Tier1
+}
+
+case object Charmeleon extends FirePokemon {
+  val tier: Hierarchy = Tier2
+}
+
+case object Charizard extends FirePokemon {
+  val tier: Hierarchy = Tier3
+}
+
+trait WaterPokemon extends Pokemon
+
+case object Squirtle extends WaterPokemon {
+  val tier: Hierarchy = Tier1
+}
+
+case object WarTortle extends WaterPokemon {
+  val tier: Hierarchy = Tier2
+}
+
+case object Blastoise extends WaterPokemon {
+  val tier: Hierarchy = Tier3
+}
+
+trait GrassPokemon extends Pokemon
+
+case object Bulbasaur extends GrassPokemon {
+  val tier: Hierarchy = Tier1
+}
+
+case object Ivysaur extends GrassPokemon {
+  val tier: Hierarchy = Tier2
+}
+
+case object Venusaur extends GrassPokemon {
+  val tier: Hierarchy = Tier3
+}
+
 
