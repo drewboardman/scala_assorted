@@ -1,69 +1,75 @@
-sealed trait PokeMove {
-  def show: String
-}
+object PokemonTypleClasses {
 
-trait FireMove extends PokeMove
-case object Ember extends FireMove {
-  override def show = "Vinewhip"
-}
-case object FlameThrower extends FireMove {
-  override def show = "FlameThrower"
-}
-case object FireBlast extends FireMove {
-  override def show = "Fireblast"
-}
-
-trait WaterMove extends PokeMove
-case object Bubble extends WaterMove {
-  override def show = "Bubble"
-}
-case object WaterGun extends WaterMove {
-  override def show = "Watergun"
-}
-
-trait GrassMove extends PokeMove
-case object VineWhip extends GrassMove {
-  override def show = "Vinewhip"
-}
-
-sealed trait Pokemon
-sealed trait Tier1 extends Pokemon
-implicit val Tier1Ord = new Ordered[Tier1] // why can't i create an instance of this?
-
-sealed trait Tier2 extends Pokemon
-sealed trait Tier3 extends Pokemon
-
-trait FirePokemon extends Pokemon
-case object Charmander extends FirePokemon with Tier1
-case object Charmeleon extends FirePokemon with Tier3
-case object Charizard extends FirePokemon with Tier3
-
-trait WaterPokemon extends Pokemon
-case object Squirtle extends WaterPokemon with Tier1
-case object WarTortle extends WaterPokemon with Tier2
-case object Blastoise extends WaterPokemon with Tier3
-
-trait GrassPokemon extends Pokemon
-case object Bulbasaur extends GrassPokemon with Tier1
-case object Ivysaur extends GrassPokemon with Tier2
-case object Venusaur extends GrassPokemon with Tier3
-
-trait Battle[A <: Pokemon] {
-  def ability(a: A): PokeMove
-  def fight[B <: Pokemon](a1: A, a2: B): Pokemon
-}
-
-implicit class PokeOps(a: Pokemon) {
-  def considerTier(a: Pokemon, b: Pokemon): Pokemon =
-}
-implicit val FirePokemonBattle = new Battle[FirePokemon] {
-  override def ability(a: FirePokemon): PokeMove = a match {
-    case Charmander => Ember
-    case Charmeleon => FlameThrower
-    case Charizard => FireBlast
+  trait Hierarchy {
+    val order: Int
   }
 
-  override def fight(a: FirePokemon, b: Pokemon): Pokemon = b match {
-    case w: WaterPokemon => w
+  case object Tier1 extends Hierarchy {
+    override val order = 1
   }
+
+  case object Tier2 extends Hierarchy {
+    override val order = 2
+  }
+
+  case object Tier3 extends Hierarchy {
+    override val order = 3
+  }
+
+  implicit val TierOrdering: Ordering[Hierarchy] = new Ordering[Hierarchy] {
+    override def compare(x: Hierarchy, y: Hierarchy): Int = x.order - y.order match {
+      case x: Int if x > 0 => 1
+      case x: Int if x < 0 => -1
+      case _: Int => 0
+    }
+  }
+
+  sealed trait Pokemon
+
+  trait FirePokemon extends Pokemon
+
+  case object Charmander extends FirePokemon {
+    val tier: Hierarchy = Tier1
+  }
+
+  case object Charmeleon extends FirePokemon {
+    val tier: Hierarchy = Tier2
+  }
+
+  case object Charizard extends FirePokemon {
+    val tier: Hierarchy = Tier3
+  }
+
+  trait WaterPokemon extends Pokemon
+
+  case object Squirtle extends WaterPokemon {
+    val tier: Hierarchy = Tier1
+  }
+
+  case object WarTortle extends WaterPokemon {
+    val tier: Hierarchy = Tier2
+  }
+
+  case object Blastoise extends WaterPokemon {
+    val tier: Hierarchy = Tier3
+  }
+
+  trait GrassPokemon extends Pokemon
+
+  case object Bulbasaur extends GrassPokemon {
+    val tier: Hierarchy = Tier1
+  }
+
+  case object Ivysaur extends GrassPokemon {
+    val tier: Hierarchy = Tier2
+  }
+
+  case object Venusaur extends GrassPokemon {
+    val tier: Hierarchy = Tier3
+  }
+
+  trait Battle[A <: Pokemon] {
+    def fight[B <: Pokemon](a1: A, a2: B): Pokemon
+  }
+
 }
