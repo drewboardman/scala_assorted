@@ -19,11 +19,7 @@ object PokemonTypleClasses {
   }
 
   implicit val TierOrdering: Ordering[Hierarchy] = new Ordering[Hierarchy] {
-    override def compare(x: Hierarchy, y: Hierarchy): Int = x.order - y.order match {
-      case x: Int if x > 0 => 1
-      case x: Int if x < 0 => -1
-      case _: Int => 0
-    }
+    override def compare(x: Hierarchy, y: Hierarchy): Int = x.order - y.order
   }
 
   implicit class RichTieredPokemon(a: Pokemon) {
@@ -46,4 +42,11 @@ object PokemonTypleClasses {
       case anotherFire: FirePokemon => if (a.tier == anotherFire.tier) Draw else Winner(anotherFire.considerTiers(a))
     }
   }
+
+  /**
+    * The interface should be as follows:
+    * 1. Define a Pokemon Type (eg "air")
+    * 2. Put pokemon in that type, with tiers
+    * 3. Provide a typeclass instance of something that tells how they stack up against other types
+    */
 }
